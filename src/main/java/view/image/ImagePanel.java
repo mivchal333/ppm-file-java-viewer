@@ -15,10 +15,10 @@ public class ImagePanel extends JPanel {
     private BufferedImage image;
     private double scale;
 
-    public ImagePanel(BufferedImage image) {
+
+    public ImagePanel() {
         super();
 
-        this.image = image;
         this.scale = DEFAULT_SCALE;
         this.addKeyListener(ResizeKeyListener.actions(() -> {
                     this.repaint();
@@ -29,7 +29,6 @@ public class ImagePanel extends JPanel {
                     scale -= SCALE_CHANGE_DELTA;
                 }));
 
-        refreshPanel();
     }
 
     private void refreshPanel() {

@@ -20,7 +20,7 @@ import java.util.Scanner;
 
 public class ApplicationFrame extends JFrame {
 
-    private ImagePanel imagePanel;
+    private final ImagePanel imagePanel = new ImagePanel();
     private Dialog dialog;
 
 
@@ -31,10 +31,12 @@ public class ApplicationFrame extends JFrame {
         setSize(1000, 1000);
         setVisible(true);
 
+        add(imagePanel);
+
         prepareMenu();
 
         try {
-            loadImage();
+            loadImage("ppm-test-01-p3.ppm");
         } catch (Exception e) {
             e.printStackTrace();
             addErrorLabel("Error while file processing");
@@ -49,13 +51,8 @@ public class ApplicationFrame extends JFrame {
         add(errorLabel);
     }
 
-    private void loadImage() throws FileNotFoundException {
+    private void loadImage(String path) throws FileNotFoundException {
         Ppm3FileReader reader = new Ppm3FileReader();
-
-//        String path = "ppm-test-01-p3.ppm";
-        String path = "ppm-test-02-p3-comments.ppm";
-//        String path = "ppm-test-04-p3-16bit.ppm";
-//        String path = "ppm-test-07-p3-big.ppm";
 
         Scanner sc = new Scanner(new FileInputStream(path));
 
@@ -76,8 +73,7 @@ public class ApplicationFrame extends JFrame {
                     image.setRGB(x, y, color.getRGB());
                 });
 
-        imagePanel = new ImagePanel(image);
-        add(imagePanel);
+        imagePanel.setImage(image);
     }
 
     private void prepareMenu() {
@@ -88,11 +84,45 @@ public class ApplicationFrame extends JFrame {
         i1.addActionListener(e -> showSaveDialog());
         menu.add(i1);
 
-        MenuItem i2 = new MenuItem("Read");
+        MenuItem i2 = new MenuItem("Read JPG");
         i2.addActionListener(e -> showReadDialog());
         menu.add(i2);
 
+        MenuItem i3 = new MenuItem("Read PPM");
+        i3.addActionListener(e -> showReadPpmDialog());
+        menu.add(i3);
+
         setMenuBar(mb);
+    }
+
+    private void showReadPpmDialog() {
+        dialog = new Dialog(this, "Read PPM", true);
+        dialog.setLayout(new GridLayout());
+
+        Button b = new Button("Go");
+        Button closeButton = new Button("Close");
+        closeButton.addActionListener(e -> dialog.setVisible(false));
+
+        TextField filenameField = new TextField("ppm-test-02-p3-comments.ppm");
+        filenameField.setBounds(50, 50, 300, 20);
+
+        b.addActionListener(e -> {
+            dialog.setVisible(false);
+            try {
+                loadImage(filenameField.getText());
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+                addErrorLabel(ex.getMessage());
+            }
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        dialog.add(b);
+        dialog.add(filenameField);
+        dialog.add(closeButton);
+        dialog.setSize(500, 500);
+        dialog.setVisible(true);
     }
 
     private void processReadImageAction(String filename) {
