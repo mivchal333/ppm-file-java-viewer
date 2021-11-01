@@ -1,6 +1,12 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
-import modifier.*;
+import modifier.AddBrightnessModifier;
+import modifier.ColorModifier;
+import modifier.SubtractBrightnessModifier;
+import modifier.color.AddColorModifier;
+import modifier.color.DivideColorModifier;
+import modifier.color.MultipleColorModifier;
+import modifier.color.SubtractColorModifier;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -11,7 +17,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,7 +31,7 @@ public class ApplicationFrame extends JFrame {
     private final ImagePanel imagePanel = new ImagePanel();
     private Dialog dialog;
     private ColorModifier colorModifier;
-    private modifier.Color modifierColor;
+    private modifier.color.Color modifierColor;
     private double modifierValue;
     private PpmImage ppmImage;
 
@@ -140,6 +145,12 @@ public class ApplicationFrame extends JFrame {
         });
         colors.add(divide);
 
+        MenuItem brightness = new MenuItem("Brightness");
+        brightness.addActionListener(e -> {
+            showBrightnessModifierDialog();
+        });
+        colors.add(brightness);
+
         setMenuBar(mb);
     }
 
@@ -226,6 +237,42 @@ public class ApplicationFrame extends JFrame {
 
         dialog.add(b);
         dialog.add(colorField);
+        dialog.add(valueTextField);
+        dialog.add(closeButton);
+        dialog.setSize(500, 500);
+        dialog.setVisible(true);
+    }
+
+    private void showBrightnessModifierDialog() {
+        dialog = new Dialog(this, "Select Brightness", true);
+        dialog.setLayout(new GridLayout());
+
+        Button b = new Button("Go");
+        Button closeButton = new Button("Close");
+        closeButton.addActionListener(e -> dialog.setVisible(false));
+
+        TextField operationTypeField = new TextField("add");
+        operationTypeField.setBounds(50, 50, 300, 20);
+
+        TextField valueTextField = new TextField("10.0");
+        valueTextField.setBounds(50, 50, 300, 20);
+
+        b.addActionListener(e -> {
+            dialog.setVisible(false);
+            if ("add".equals(operationTypeField.getText())) {
+                colorModifier = new AddBrightnessModifier();
+                return;
+            } else {
+                colorModifier = new SubtractBrightnessModifier();
+            }
+            modifierValue = Double.parseDouble(valueTextField.getText());
+            loadImage();
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        dialog.add(b);
+        dialog.add(operationTypeField);
         dialog.add(valueTextField);
         dialog.add(closeButton);
         dialog.setSize(500, 500);

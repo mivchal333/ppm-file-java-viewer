@@ -1,6 +1,6 @@
-package modifier;
+package modifier.color;
 
-public class DivideColorModifier extends ColorModifier {
+public class DivideColorModifier extends OneColorModifier {
     @Override
     public int processPixel(int color, double value) {
         int result = (int) (color / value);

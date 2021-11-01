@@ -1,6 +1,6 @@
-package modifier;
+package modifier.color;
 
-public class SubtractColorModifier extends ColorModifier {
+public class SubtractColorModifier extends OneColorModifier {
     @Override
     public int processPixel(int color, double value) {
         int subtract = (int) (color - value);
