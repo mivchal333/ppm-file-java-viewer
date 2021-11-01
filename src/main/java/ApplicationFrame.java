@@ -1,8 +1,6 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
-import modifier.AddBrightnessModifier;
-import modifier.ColorModifier;
-import modifier.SubtractBrightnessModifier;
+import modifier.*;
 import modifier.color.AddColorModifier;
 import modifier.color.DivideColorModifier;
 import modifier.color.MultipleColorModifier;
@@ -150,6 +148,20 @@ public class ApplicationFrame extends JFrame {
             showBrightnessModifierDialog();
         });
         colors.add(brightness);
+
+        MenuItem toGrey = new MenuItem("To Grey Avg");
+        toGrey.addActionListener(e -> {
+            colorModifier = new GreyAvgModifier();
+            loadImage();
+        });
+        colors.add(toGrey);
+
+        MenuItem toGreyWeightAvg = new MenuItem("To Grey Weight Avg");
+        toGreyWeightAvg.addActionListener(e -> {
+            colorModifier = new GreyWeightAvgModifier();
+            loadImage();
+        });
+        colors.add(toGreyWeightAvg);
 
         setMenuBar(mb);
     }
