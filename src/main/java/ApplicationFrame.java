@@ -44,11 +44,16 @@ public class ApplicationFrame extends JFrame {
     }
 
     private void addErrorLabel(String text) {
+        remove(imagePanel);
+        repaint();
+        revalidate();
         JPanel errorPanel = new JPanel();
         errorPanel.setBackground(Color.RED);
         Label errorLabel = new Label(text);
         errorPanel.add(errorLabel);
         add(errorLabel);
+        repaint();
+        revalidate();
     }
 
     private void loadImage(String path) throws FileNotFoundException {
@@ -110,9 +115,9 @@ public class ApplicationFrame extends JFrame {
             dialog.setVisible(false);
             try {
                 loadImage(filenameField.getText());
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
-                addErrorLabel(ex.getMessage());
+                addErrorLabel("File load error" + ex.getMessage());
             }
         });
 
