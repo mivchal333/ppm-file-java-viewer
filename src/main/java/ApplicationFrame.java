@@ -1,5 +1,9 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
+import modifier.AddColorModifier;
+import modifier.ColorModifier;
+import modifier.SubtractColorModifier;
+import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
 import javax.imageio.IIOImage;
@@ -22,7 +26,10 @@ public class ApplicationFrame extends JFrame {
 
     private final ImagePanel imagePanel = new ImagePanel();
     private Dialog dialog;
-
+    private ColorModifier colorModifier;
+    private modifier.Color modifierColor;
+    private double modifierValue;
+    private PpmImage ppmImage;
 
     public ApplicationFrame() {
         super("Grafika Komputerowa");
@@ -36,7 +43,8 @@ public class ApplicationFrame extends JFrame {
         prepareMenu();
 
         try {
-            loadImage("ppm-test-01-p3.ppm");
+            ppmImage = readImage("ppm-test-01-p3.ppm");
+            loadImage();
         } catch (Exception e) {
             e.printStackTrace();
             addErrorLabel("Error while file processing");
@@ -56,23 +64,27 @@ public class ApplicationFrame extends JFrame {
         revalidate();
     }
 
-    private void loadImage(String path) throws FileNotFoundException {
+    private PpmImage readImage(String path) throws FileNotFoundException {
         Ppm3FileReader reader = new Ppm3FileReader();
 
         Scanner sc = new Scanner(new FileInputStream(path));
 
-        PpmImage ppmImage = reader.convertImage(sc);
+        return reader.convertImage(sc);
+    }
 
+    private void loadImage() {
         Integer width = ppmImage.getWidth();
         Integer height = ppmImage.getHeight();
         BufferedImage image;
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-
         ppmImage.getPixels()
                 .forEach((i, pixel) -> {
                     Color color = new Color(pixel.getR(), pixel.getG(), pixel.getB());
+                    if (colorModifier != null) {
+                        color = colorModifier.modify(color, modifierColor, modifierValue);
+                    }
                     int x = i % width;
                     int y = i / width;
                     image.setRGB(x, y, color.getRGB());
@@ -97,6 +109,25 @@ public class ApplicationFrame extends JFrame {
         i3.addActionListener(e -> showReadPpmDialog());
         menu.add(i3);
 
+
+        Menu colors = new Menu("Colors");
+        mb.add(colors);
+
+        MenuItem addColor = new MenuItem("Add");
+        addColor.addActionListener(e -> {
+            colorModifier = new AddColorModifier();
+            showColorModifierDialog();
+        });
+        colors.add(addColor);
+
+        MenuItem subtract = new MenuItem("Subtract");
+        subtract.addActionListener(e -> {
+            colorModifier = new SubtractColorModifier();
+            showColorModifierDialog();
+        });
+        colors.add(subtract);
+
+
         setMenuBar(mb);
     }
 
@@ -114,7 +145,8 @@ public class ApplicationFrame extends JFrame {
         b.addActionListener(e -> {
             dialog.setVisible(false);
             try {
-                loadImage(filenameField.getText());
+                ppmImage = readImage(filenameField.getText());
+                loadImage();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 addErrorLabel("File load error" + ex.getMessage());
@@ -155,6 +187,37 @@ public class ApplicationFrame extends JFrame {
             ex.printStackTrace();
             addErrorLabel(ex.getMessage());
         }
+    }
+
+    private void showColorModifierDialog() {
+        dialog = new Dialog(this, "Select Color", true);
+        dialog.setLayout(new GridLayout());
+
+        Button b = new Button("Go");
+        Button closeButton = new Button("Close");
+        closeButton.addActionListener(e -> dialog.setVisible(false));
+
+        TextField colorField = new TextField("red");
+        colorField.setBounds(50, 50, 300, 20);
+
+        TextField valueTextField = new TextField("10.0");
+        valueTextField.setBounds(50, 50, 300, 20);
+
+        b.addActionListener(e -> {
+            dialog.setVisible(false);
+            modifierValue = Double.parseDouble(valueTextField.getText());
+            modifierColor = ColorSelectExtractor.parse(colorField.getText());
+            loadImage();
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        dialog.add(b);
+        dialog.add(colorField);
+        dialog.add(valueTextField);
+        dialog.add(closeButton);
+        dialog.setSize(500, 500);
+        dialog.setVisible(true);
     }
 
     private void showSaveDialog() {
