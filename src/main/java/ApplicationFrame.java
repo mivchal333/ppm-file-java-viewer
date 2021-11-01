@@ -1,8 +1,6 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
-import modifier.AddColorModifier;
-import modifier.ColorModifier;
-import modifier.SubtractColorModifier;
+import modifier.*;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -13,6 +11,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.*;
+import java.awt.Color;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -43,8 +42,9 @@ public class ApplicationFrame extends JFrame {
         prepareMenu();
 
         try {
-            ppmImage = readImage("ppm-test-01-p3.ppm");
+            ppmImage = readImage("ppm-test-02-p3-comments.ppm");
             loadImage();
+
         } catch (Exception e) {
             e.printStackTrace();
             addErrorLabel("Error while file processing");
@@ -127,6 +127,18 @@ public class ApplicationFrame extends JFrame {
         });
         colors.add(subtract);
 
+        MenuItem multiple = new MenuItem("Multiple");
+        multiple.addActionListener(e -> {
+            colorModifier = new MultipleColorModifier();
+            showColorModifierDialog();
+        });
+        colors.add(multiple);
+        MenuItem divide = new MenuItem("Divide");
+        divide.addActionListener(e -> {
+            colorModifier = new DivideColorModifier();
+            showColorModifierDialog();
+        });
+        colors.add(divide);
 
         setMenuBar(mb);
     }

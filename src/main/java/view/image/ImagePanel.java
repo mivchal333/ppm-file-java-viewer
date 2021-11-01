@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel {
-    public final double DEFAULT_SCALE = 10.0;
+    public final double DEFAULT_SCALE = 1.0;
 
     private final double SCALE_CHANGE_DELTA = 0.4;
 
