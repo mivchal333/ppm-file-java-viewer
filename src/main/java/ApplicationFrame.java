@@ -5,7 +5,8 @@ import modifier.color.single.AddColorModifier;
 import modifier.color.single.DivideColorModifier;
 import modifier.color.single.MultipleColorModifier;
 import modifier.color.single.SubtractColorModifier;
-import modifier.filter.SmoothFilter;
+import modifier.filter.SmoothAvgFilter;
+import modifier.filter.SmoothMedianFilter;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -168,18 +169,30 @@ public class ApplicationFrame extends JFrame {
         Menu filters = new Menu("Filters");
         mb.add(filters);
 
-        MenuItem smoothFilter = new MenuItem("Smooth Filter");
+        MenuItem smoothFilter = new MenuItem("Smooth Avg Filter");
         smoothFilter.addActionListener(e -> {
-            processSmoothFilter();
+            processSmoothAvgFilter();
         });
         filters.add(smoothFilter);
+
+        MenuItem medianFilter = new MenuItem("Smooth Median Filter");
+        medianFilter.addActionListener(e -> {
+            processSmoothMedianFilter();
+        });
+        filters.add(medianFilter);
 
 
         setMenuBar(mb);
     }
 
-    void processSmoothFilter() {
-        SmoothFilter filter = new SmoothFilter();
+    void processSmoothMedianFilter() {
+        SmoothMedianFilter filter = new SmoothMedianFilter();
+        BufferedImage processed = filter.process(imagePanel.getImage());
+        imagePanel.setImage(processed);
+    }
+
+    void processSmoothAvgFilter() {
+        SmoothAvgFilter filter = new SmoothAvgFilter();
         BufferedImage processed = filter.process(imagePanel.getImage());
         imagePanel.setImage(processed);
     }

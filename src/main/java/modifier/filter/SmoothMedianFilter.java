@@ -2,8 +2,11 @@ package modifier.filter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class SmoothFilter {
+public class SmoothMedianFilter {
     private Color[] c;
 
     public BufferedImage process(BufferedImage input) {
@@ -26,21 +29,18 @@ public class SmoothFilter {
                 i = 0;
                 int newR = 0, newG = 0, newB = 0;
 
+                ArrayList<Integer> redColorValues = new ArrayList<>();
+                ArrayList<Integer> greenColorValues = new ArrayList<>();
+                ArrayList<Integer> blueColorValues = new ArrayList<>();
                 for (int d = 0; d < pixelInMaskCount; d++) {
-                    newR = newR + colorsTemp[d].getRed();
+                    redColorValues.add(colorsTemp[d].getRed());
+                    greenColorValues.add(colorsTemp[d].getGreen());
+                    blueColorValues.add(colorsTemp[d].getBlue());
                 }
 
-                newR = newR / (pixelInMaskCount);
-                for (int d = 0; d < pixelInMaskCount; d++) {
-                    newG = newG + colorsTemp[d].getGreen();
-                }
-
-                newG = newG / (pixelInMaskCount);
-                for (int d = 0; d < pixelInMaskCount; d++) {
-                    newB = newB + colorsTemp[d].getBlue();
-                }
-
-                newB = newB / (pixelInMaskCount);
+                newR = getMedian(redColorValues);
+                newG = getMedian(greenColorValues);
+                newB = getMedian(blueColorValues);
 
                 output.setRGB(y, x, getRgb(newR, newG, newB));
             }
@@ -71,5 +71,16 @@ public class SmoothFilter {
             }
             return input.getRGB(y, x);
         }
+    }
+
+    private int getMedian(List<Integer> values) {
+        Collections.sort(values);
+        int median;
+        int size = values.size();
+        if (size % 2 == 0)
+            median = (values.get(size / 2) + values.get(size / 2 - 1)) / 2;
+        else
+            median = values.get(size / 2);
+        return median;
     }
 }
