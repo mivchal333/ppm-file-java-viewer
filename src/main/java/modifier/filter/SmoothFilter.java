@@ -7,72 +7,55 @@ public class SmoothFilter {
     private Color[] c;
 
     public BufferedImage process(BufferedImage input) {
-        Color[] color;
 
         BufferedImage output = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         int i = 0;
-        int max = 400, rad = 10;
-        int r1 = 0, g1 = 0, b1 = 0;
-        color = new Color[max];
+        int pixelInMaskCount = 100;
+        int maskRadio = 5;
+        Color[] colorsTemp = new Color[pixelInMaskCount];
 
-        // Now this core section of code is responsible for
-        // blurring of an image
-
-        int x, y, x1, y1, d;
-
-        // Running nested for loops for each pixel
-        // and blurring it
-        for (x = rad; x < input.getHeight() - rad; x++) {
-            for (y = rad; y < input.getWidth() - rad; y++) {
-                for (x1 = x - rad; x1 < x + rad; x1++) {
-                    for (y1 = y - rad; y1 < y + rad; y1++) {
-                        color[i++] = new Color(input.getRGB(y1, x1));
+        for (int x = 0; x < input.getHeight(); x++) {
+            for (int y = 0; y < input.getWidth(); y++) {
+                for (int tempX = x - maskRadio; tempX < x + maskRadio; tempX++) {
+                    for (int tempY = y - maskRadio; tempY < y + maskRadio; tempY++) {
+                        colorsTemp[i++] = new Color(getPixelRgb(tempY, tempX, input));
                     }
                 }
 
                 i = 0;
+                int newR = 0, newG = 0, newB = 0;
 
-                for (d = 0; d < max; d++) {
-                    r1 = r1 + color[d].getRed();
+                for (int d = 0; d < pixelInMaskCount; d++) {
+                    newR = newR + colorsTemp[d].getRed();
                 }
 
-                r1 = r1 / (max);
-                for (d = 0; d < max; d++) {
-                    g1 = g1 + color[d].getGreen();
+                newR = newR / (pixelInMaskCount);
+                for (int d = 0; d < pixelInMaskCount; d++) {
+                    newG = newG + colorsTemp[d].getGreen();
                 }
 
-                g1 = g1 / (max);
-                for (d = 0; d < max; d++) {
-                    b1 = b1 + color[d].getBlue();
+                newG = newG / (pixelInMaskCount);
+                for (int d = 0; d < pixelInMaskCount; d++) {
+                    newB = newB + colorsTemp[d].getBlue();
                 }
 
-                b1 = b1 / (max);
-                int sum1 = (r1 << 16) + (g1 << 8) + b1;
-                output.setRGB(y, x, sum1);
+                newB = newB / (pixelInMaskCount);
+
+                output.setRGB(y, x, getRgb(newR, newG, newB));
             }
         }
         return output;
     }
 
-    public BufferedImage process2(BufferedImage input) {
-        Color[] color;
+    private int getRgb(int r, int g, int b) {
 
-        int width = input.getWidth();
-        int height = input.getHeight();
-        BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int rgb = input.getRGB(x, y);
-            }
-        }
-        return output;
+        return (r << 16) + (g << 8) + b;
     }
 
-    private int getRgb(int x, int y, BufferedImage input) {
+    private int getPixelRgb(int y, int x, BufferedImage input) {
         try {
-            return input.getRGB(x, y);
+            return input.getRGB(y, x);
         } catch (Exception e) {
             if (x < 0) {
                 x = 0;
@@ -80,13 +63,13 @@ public class SmoothFilter {
             if (y < 0) {
                 y = 0;
             }
-            if (x > input.getWidth() - 1) {
-                x = input.getWidth() - 1;
+            if (x > input.getHeight() - 1) {
+                x = input.getHeight() - 1;
             }
-            if (y > input.getHeight() - 1) {
-                y = input.getHeight() - 1;
+            if (y > input.getWidth() - 1) {
+                y = input.getWidth() - 1;
             }
-            return input.getRGB(x, y);
+            return input.getRGB(y, x);
         }
     }
 }
