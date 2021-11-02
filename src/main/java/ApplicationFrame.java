@@ -7,6 +7,7 @@ import modifier.color.single.MultipleColorModifier;
 import modifier.color.single.SubtractColorModifier;
 import modifier.filter.SmoothAvgFilter;
 import modifier.filter.SmoothMedianFilter;
+import modifier.filter.SobelFilter;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -181,12 +182,24 @@ public class ApplicationFrame extends JFrame {
         });
         filters.add(medianFilter);
 
+        MenuItem sobelFilter = new MenuItem("Sobel Filter");
+        sobelFilter.addActionListener(e -> {
+            processSobelFilter();
+        });
+        filters.add(sobelFilter);
+
 
         setMenuBar(mb);
     }
 
     void processSmoothMedianFilter() {
         SmoothMedianFilter filter = new SmoothMedianFilter();
+        BufferedImage processed = filter.process(imagePanel.getImage());
+        imagePanel.setImage(processed);
+    }
+
+    void processSobelFilter() {
+        SobelFilter filter = new SobelFilter();
         BufferedImage processed = filter.process(imagePanel.getImage());
         imagePanel.setImage(processed);
     }
