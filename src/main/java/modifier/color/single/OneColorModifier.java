@@ -1,6 +1,6 @@
-package modifier.color;
+package modifier.color.single;
 
-import modifier.ColorModifier;
+import modifier.color.ColorModifier;
 
 public abstract class OneColorModifier extends ColorModifier {
     int MIN_COLOR_BOUND = 0;

@@ -1,10 +1,11 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
-import modifier.*;
-import modifier.color.AddColorModifier;
-import modifier.color.DivideColorModifier;
-import modifier.color.MultipleColorModifier;
-import modifier.color.SubtractColorModifier;
+import modifier.color.*;
+import modifier.color.single.AddColorModifier;
+import modifier.color.single.DivideColorModifier;
+import modifier.color.single.MultipleColorModifier;
+import modifier.color.single.SubtractColorModifier;
+import modifier.filter.SmoothFilter;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -29,7 +30,7 @@ public class ApplicationFrame extends JFrame {
     private final ImagePanel imagePanel = new ImagePanel();
     private Dialog dialog;
     private ColorModifier colorModifier;
-    private modifier.color.Color modifierColor;
+    private modifier.color.single.Color modifierColor;
     private double modifierValue;
     private PpmImage ppmImage;
 
@@ -163,7 +164,24 @@ public class ApplicationFrame extends JFrame {
         });
         colors.add(toGreyWeightAvg);
 
+
+        Menu filters = new Menu("Filters");
+        mb.add(filters);
+
+        MenuItem smoothFilter = new MenuItem("Smooth Filter");
+        smoothFilter.addActionListener(e -> {
+            processSmoothFilter();
+        });
+        filters.add(smoothFilter);
+
+
         setMenuBar(mb);
+    }
+
+    void processSmoothFilter() {
+        SmoothFilter filter = new SmoothFilter();
+        BufferedImage processed = filter.process(imagePanel.getImage());
+        imagePanel.setImage(processed);
     }
 
     private void showReadPpmDialog() {

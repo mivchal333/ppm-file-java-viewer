@@ -1,6 +1,6 @@
 package view.image;
 
-import modifier.color.Color;
+import modifier.color.single.Color;
 
 public class ColorSelectExtractor {
     public static Color parse(String string) {

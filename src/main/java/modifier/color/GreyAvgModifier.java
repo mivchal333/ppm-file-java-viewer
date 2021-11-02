@@ -1,10 +1,10 @@
-package modifier;
+package modifier.color;
 
 import java.awt.*;
 
 public class GreyAvgModifier extends ColorModifier {
     @Override
-    public Color modify(Color color, modifier.color.Color modifierColor, double modifierValue) {
+    public Color modify(Color color, modifier.color.single.Color modifierColor, double modifierValue) {
         int red = color.getRed();
         int green = color.getGreen();
         int blue = color.getBlue();

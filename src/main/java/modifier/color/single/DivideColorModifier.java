@@ -1,4 +1,4 @@
-package modifier.color;
+package modifier.color.single;
 
 public class DivideColorModifier extends OneColorModifier {
     @Override
