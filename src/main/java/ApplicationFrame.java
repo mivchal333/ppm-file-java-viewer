@@ -8,6 +8,7 @@ import modifier.color.single.SubtractColorModifier;
 import modifier.filter.SmoothAvgFilter;
 import modifier.filter.SmoothMedianFilter;
 import modifier.filter.SobelFilter;
+import modifier.histogram.HistogramEqualization;
 import view.image.ColorSelectExtractor;
 import view.image.ImagePanel;
 
@@ -189,7 +190,22 @@ public class ApplicationFrame extends JFrame {
         filters.add(sobelFilter);
 
 
+        Menu histAndBin = new Menu("Hist & Bin");
+        mb.add(histAndBin);
+
+        MenuItem histogramEqualisation = new MenuItem("Histogram Equalisation");
+        histogramEqualisation.addActionListener(e -> {
+            processHistogramEqualisation();
+        });
+        histAndBin.add(histogramEqualisation);
+
+
         setMenuBar(mb);
+    }
+
+    private void processHistogramEqualisation() {
+        BufferedImage processedImage = new HistogramEqualization().histogramEqualization(imagePanel.getImage());
+        imagePanel.setImage(processedImage);
     }
 
     void processSmoothMedianFilter() {
