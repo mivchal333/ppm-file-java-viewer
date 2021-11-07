@@ -1,5 +1,6 @@
 import file.Ppm3FileReader;
 import file.model.PpmImage;
+import modifier.binarization.Binarization;
 import modifier.color.*;
 import modifier.color.single.AddColorModifier;
 import modifier.color.single.DivideColorModifier;
@@ -194,11 +195,12 @@ public class ApplicationFrame extends JFrame {
         mb.add(histAndBin);
 
         MenuItem histogramEqualisation = new MenuItem("Histogram Equalisation");
-        histogramEqualisation.addActionListener(e -> {
-            processHistogramEqualisation();
-        });
+        histogramEqualisation.addActionListener(e -> processHistogramEqualisation());
         histAndBin.add(histogramEqualisation);
 
+        MenuItem binarization = new MenuItem("Binarization");
+        binarization.addActionListener(e -> showBinarizationDialog());
+        histAndBin.add(binarization);
 
         setMenuBar(mb);
     }
@@ -224,6 +226,32 @@ public class ApplicationFrame extends JFrame {
         SmoothAvgFilter filter = new SmoothAvgFilter();
         BufferedImage processed = filter.process(imagePanel.getImage());
         imagePanel.setImage(processed);
+    }
+
+    private void showBinarizationDialog() {
+        dialog = new Dialog(this, "Set binarization threshold [0-765]", true);
+        dialog.setLayout(new GridLayout());
+
+        Button b = new Button("Go");
+        Button closeButton = new Button("Close");
+        closeButton.addActionListener(e -> dialog.setVisible(false));
+
+        TextField field = new TextField("383");
+        field.setBounds(50, 50, 300, 20);
+
+        b.addActionListener(e -> {
+            dialog.setVisible(false);
+            BufferedImage processedImage = new Binarization().binarize(imagePanel.getImage(), Integer.parseInt(field.getText()));
+            imagePanel.setImage(processedImage);
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        dialog.add(b);
+        dialog.add(field);
+        dialog.add(closeButton);
+        dialog.setSize(500, 500);
+        dialog.setVisible(true);
     }
 
     private void showReadPpmDialog() {
